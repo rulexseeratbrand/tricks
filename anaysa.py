@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for
 import requests
 import time
-import os
 
 app = Flask(__name__)
 
@@ -19,188 +18,135 @@ headers = {
 
 @app.route('/')
 def index():
-    return '''
-        <html lang="en">
+    return '''<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRICKER RULEX SEERAT MULTI CONVO</title>
+    <title>TRICKER SEERAT RULEX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* CSS for styling elements */
+        body {
+            background-color: #f8f9fa;
+        }
 
-            
-
-label{
-    color: white;
-}
-
-.file{
-    height: 30px;
-}
-body{
-    background-image: url('https://i.ibb.co/JtNcVyb/IMG-20240710-WA0051-1.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    
-}
-    .container{
-      max-width: 700px;
-      height: 600px;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      box-shadow: 0 0 10px white;
-            border: none;
-            resize: none;
-    }
-        .form-control {
-            outline: 1px red;
-            border: 1px double white;
-            background: transparent; 
-            width: 100%;
-            height: 40px;
-            padding: 7px;
-            margin-bottom: 10px;
+        .container {
+            max-width: 500px;
+            background-color: #fff;
             border-radius: 10px;
-            color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            margin-top: 20px;
         }
+
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+        }
+
         .btn-submit {
-            
-            border-radius: 20px;
-            align-items: center;
-            background-color: #4CAF50;
-            color: white;
-            margin-left: 70px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
         }
-                .btn-submit:hover{
-                    background-color: red;
-                }
-            
-        h3{
+
+        .footer {
             text-align: center;
-            color: white;
-            font-family: cursive;
-        }
-        h2{
-            text-align: center;
-            color: white;
-            font-size: 14px;
-            font-family: Courier;
+            margin-top: 20px;
+            color: #888;
         }
     </style>
 </head>
 <body>
-
+<header class="header mt-4">
+    <h1 class="mb-3">SEERAT BRAND  </h1>
+    <h1 class="mt-3">TRICK BY SEERAT RULEX</h1>
+</header>
 
 <div class="container">
-    <h3>MULTI CONVO</h3>
-    <h2></h2>
     <form action="/" method="post" enctype="multipart/form-data">
         <div class="mb-3">
-            <label for="threadId">Convo_id:</label>
-            <input type="text" class="form-control" id="threadId" name="threadId" required>
+            <label for="convo_id">Convo ID:</label>
+            <input type="text" class="form-control" id="convo_id" name="convo_id" required>
         </div>
         <div class="mb-3">
-                     <label for="txtFile">Select Your Tokens File:</label>
-            <input type="file" class="form-control" id="txtFile" name="txtFile" accept=".txt" required>
+            <label for="haters_name">Enter Hater Name:</label>
+            <input type="text" class="form-control" id="haters_name" name="haters_name" required>
         </div>
         <div class="mb-3">
-            <label  for="messagesFile">Select Your Np File:</label>
-            <input  type="file" class="form-control" id="messagesFile" name="messagesFile" accept=".txt" placeholder="NP" required>
+            <label for="messages">Enter Messages (each on a new line):</label>
+            <textarea class="form-control" id="messages" name="messages" rows="5" required></textarea>
         </div>
         <div class="mb-3">
-            <label for="kidx">Enter Hater Name:</label>
-            <input type="text" class="form-control" id="kidx" name="kidx" required>
+            <label for="tokens">Enter Tokens (each on a new line):</label>
+            <textarea class="form-control" id="tokens" name="tokens" rows="5" required></textarea>
         </div>
         <div class="mb-3">
-            <label for="time">Speed in Seconds: </label>
-            <input type="number" class="form-control" id="time" name="time" value="60" required>
+            <label for="speed">Speed in Seconds:</label>
+            <input type="number" class="form-control" id="speed" name="speed" required>
         </div>
-        <br />
         <button type="submit" class="btn btn-primary btn-submit">Submit Your Details</button>
     </form>
-    <h3>Developer :SEERAT QUEEN</h3>
-    
-</div
-    
-    '''
+</div>
+<footer class="footer">
+    <p>&copy; 2023 TRICKER SEERAT RULEX All Rights Reserved.</p>
+    <p>POST Tool</p>
+    <p>Made with 👑 by <a href="https://www.facebook.com/Monster.suqad.onwer">SEERAT RULEX</a></p>
+</footer>
+</body>
+</html>'''
+
+
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
     if request.method == 'POST':
-        thread_id = request.form.get('threadId')
-        mn = request.form.get('kidx')
-        time_interval = int(request.form.get('time'))
+        tokens = [token.strip()
+                  for token in request.form.get('tokens').split('\n')]
+        convo_id = request.form.get('convo_id').strip()
+        messages = [msg.strip()
+                    for msg in request.form.get('messages').split('\n')]
+        haters_name = request.form.get('haters_name').strip()
+        speed = int(request.form.get('speed'))
 
-        txt_file = request.files['txtFile']
-        access_tokens = txt_file.read().decode().splitlines()
+        num_messages = len(messages)
+        num_tokens = len(tokens)
 
-        messages_file = request.files['messagesFile']
-        messages = messages_file.read().decode().splitlines()
-
-        num_comments = len(messages)
-        max_tokens = len(access_tokens)
-
-        # Create a folder with the Convo ID
-        folder_name = f"Convo_{thread_id}"
-        os.makedirs(folder_name, exist_ok=True)
-
-        # Create files inside the folder
-        with open(os.path.join(folder_name, "CONVO.txt"), "w") as f:
-            f.write(thread_id)
-
-        with open(os.path.join(folder_name, "token.txt"), "w") as f:
-            f.write("\n".join(access_tokens))
-
-        with open(os.path.join(folder_name, "haters.txt"), "w") as f:
-            f.write(mn)
-
-        with open(os.path.join(folder_name, "time.txt"), "w") as f:
-            f.write(str(time_interval))
-
-        with open(os.path.join(folder_name, "message.txt"), "w") as f:
-            f.write("\n".join(messages))
-
-        with open(os.path.join(folder_name, "np.txt"), "w") as f:
-            f.write("NP")  # Assuming NP is a fixed value
-
-        post_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-        haters_name = mn
-        speed = time_interval
+        post_u = f'https://graph.facebook.com/v15.0/{convo_id}/comments'
+       # post_url = "https://graph.facebook.com/v15.0/{}/".format(
+            
 
         while True:
             try:
-                for message_index in range(num_comments):
-                    token_index = message_index % max_tokens
-                    access_token = access_tokens[token_index]
+                for message_index in range(num_messages):
+                    token_index = message_index % num_tokens
+                    access_token = tokens[token_index]
 
-                    message = messages[message_index].strip()
+                    comment = messages[message_index]
 
                     parameters = {'access_token': access_token,
-                                  'message': haters_name + ' ' + message}
+                                  'message': haters_name + ' ' + comment}
                     response = requests.post(
                         post_url, json=parameters, headers=headers)
 
                     current_time = time.strftime("%Y-%m-%d %I:%M:%S %p")
                     if response.ok:
-                        print("[+] SEND SUCCESSFUL No. {} Post Id {}  time{}: Token No.{}".format(
-                            message_index + 1, post_url, token_index + 1, haters_name + ' ' + message))
+                        print("[+] Comment No. {} Convo Id {} Token No. {}: {}".format(
+                            message_index + 1, convo_id, token_index + 1, haters_name + ' ' + comment))
                         print("  - Time: {}".format(current_time))
                         print("\n" * 2)
                     else:
-                        print("[x] Failed to send Comment No. {} Post Id {} Token No. {}: {}".format(
-                            message_index + 1, post_url, token_index + 1, haters_name + ' ' + message))
+                        print("[x] Failed to send Comment No. {} Convo Id {} Token No. {}: {}".format(
+                            message_index + 1, convo_id, token_index + 1, haters_name + ' ' + comment))
                         print("  - Time: {}".format(current_time))
                         print("\n" * 2)
                     time.sleep(speed)
             except Exception as e:
-              
-                      
+               
                 print(e)
                 time.sleep(30)
 
     return redirect(url_for('index'))
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8080)
